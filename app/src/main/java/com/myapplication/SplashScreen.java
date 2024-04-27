@@ -10,13 +10,13 @@ import android.view.animation.AnimationUtils;
 
 public class SplashScreen extends AppCompatActivity {
     private ImageView logo;
-    private static int splashTimeOut=2000;
+    private static int splashTimeOut=3000;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-        logo=(ImageView)findViewById(R.id.logo);
+        logo=findViewById(R.id.logo);
 
         new Handler().postDelayed(new Runnable() {
             @Override

@@ -64,6 +64,63 @@ public class SQLiteManager extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(sql.toString());
     }
 
+
+
+    /**
+     *    public void onCreate(SQLiteDatabase sqLiteDatabase) {
+     *     StringBuilder sql = new StringBuilder()
+     *             .append("CREATE TABLE ")
+     *             .append(TABLE_NAME)
+     *             .append(" (")
+     *             .append(COUNTER)
+     *             .append(" INTEGER PRIMARY KEY AUTOINCREMENT, ")
+     *             .append(ITEM_ID)      ITEM_ID  =itemID
+     *             .append(" TEXT, ")
+     *             .append(ITEM_NAME)    ITEM_NAME= itemName
+     *             .append(" TEXT, ")
+     *             .append(ITEM_QUANTITY)   ITEM_QUANTITY= itemQuantity
+     *             .append(" INTEGER, ")
+     *             .append(ITEM_PRICE)    ITEM_PRICE= itemPrice
+     *             .append(" REAL, ")
+     *             .append(TOTAL_PRICE)    TOTAL_PRICE= totalPrice
+     *             .append(" REAL)");
+     *
+     *     sqLiteDatabase.execSQL(sql.toString());
+     * }
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * // Assuming you have an instance of SQLiteDatabase named 'database'
+     *
+     * ContentValues values = new ContentValues();
+     * values.put(ITEM_ID, itemID);
+     * values.put(ITEM_NAME, itemName);
+     * values.put(ITEM_QUANTITY, itemQuantity);
+     * values.put(ITEM_PRICE, itemPrice);
+     * values.put(TOTAL_PRICE, totalPrice);
+     *
+     * long newRowId = database.insert(TABLE_NAME, null, values);
+     *
+     * if (newRowId != -1) {
+     *     // Data inserted successfully
+     * } else {
+     *     // Failed to insert data
+     * }
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * */
+
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
