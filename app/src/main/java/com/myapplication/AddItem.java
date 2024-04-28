@@ -80,13 +80,6 @@ public class AddItem extends AppCompatActivity {
 
 
 
-        // get text from the text inputs then save it to the database
-        SQLiteManager sqLiteManager = SQLiteManager.instanceOfDatabase(this);
-
-        //TODO: Change this to display saved data from the database
-        Stock stock = new Stock(1,"Bento","Testing");
-        sqLiteManager.addStockToDatabase(stock);
-
     }
 
 
@@ -97,7 +90,10 @@ public class AddItem extends AppCompatActivity {
         int itemQuantity = Integer.parseInt(quantity.getText().toString());
         float itemPrice = Float.parseFloat(unitPrice.getText().toString());
         Phones phones = new Phones(itemName,itemQuantity,itemPrice);
-        //TODO save data to the database
+
+        // get text from the text inputs then save it to the database
+        SQLiteManager sqLiteManager = SQLiteManager.instanceOfDatabase(this);
+        sqLiteManager.addStockToDatabase(phones,this);
     }
 
 
@@ -114,12 +110,12 @@ public class AddItem extends AppCompatActivity {
             showError(unitPrice, "Field cannot be empty");
             return false;
         }
-
+/*
         if (!isTextOnly(productNameText)) {
             // Check if productName contains only text
             showError(productName, "Invalid input");
             return false;
-        }
+        }*/
 
         if (!isInteger(quantityText)) {
             // Check if quantity is an integer
@@ -140,12 +136,12 @@ public class AddItem extends AppCompatActivity {
     private void showError(EditText editText, String errorMessage) {
         editText.setError(errorMessage);
     }
-
+/*
     private boolean isTextOnly(String text) {
         // Regular expression to match only text (letters and spaces)
         String pattern = "^[a-zA-Z\\s]+$";
         return text.matches(pattern);
-    }
+    }*/
 
     private boolean isInteger(String text) {
         try {

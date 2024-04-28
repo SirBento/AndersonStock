@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="15dp"
         android:id="@+id/stockTable"
-        app:tableView_columnCount="5"
+        app:tableView_columnCount="4"
         app:tableView_headerColor="@color/colorPrimaryDark"
         app:tableView_headerElevation="10"
         ></de.codecrafters.tableview.TableView>

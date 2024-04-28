@@ -11,6 +11,14 @@ public class Phones {
         private float itemPrice;
         private float totalPrice;
 
+    public Phones(String itemID, String itemName, int itemQuantity, float itemPrice, float totalPrice) {
+        this.itemID = itemID;
+        this.itemName = itemName;
+        this.itemQuantity = itemQuantity;
+        this.itemPrice = itemPrice;
+        this.totalPrice = totalPrice;
+    }
+
     public Phones(String itemName, int itemQuantity, float itemPrice) {
         this.itemID = generateRandomId();
         this.itemName = itemName;
