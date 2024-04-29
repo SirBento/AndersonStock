@@ -84,7 +84,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
 
 
-    public HashMap<String, Object> populateDisplayTable() {
+   /* public HashMap<String, Object> populateDisplayTable() {
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
         HashMap<String, Object> resultData = new HashMap<>();
 
@@ -120,7 +120,45 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
         return resultData;
     }
+*/
 
+
+    public HashMap<String, Object> populateDisplayTable() {
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+        HashMap<String, Object> resultData = new HashMap<>();
+
+        try (Cursor result = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_NAME, null)) {
+            int rowCount = result.getCount();
+            int columnCount = result.getColumnCount();
+
+            String[][] data = new String[rowCount][columnCount - 1]; // Adjust column count
+            double totalPrice = 0.0;
+            int totalUnits = 0;
+
+            if (result.moveToFirst()) {
+                int row = 0;
+                do {
+                    for (int column = 2; column < columnCount; column++) { // Start from index 1
+                        if (column == columnCount - 1) {
+                            double price = Double.parseDouble(result.getString(column));
+                            totalPrice += price;
+                        } else if (column == 3) { // Adjust column index
+                            int units = Integer.parseInt(result.getString(column));
+                            totalUnits += units;
+                        }
+                        data[row][column - 2] = result.getString(column); // Adjust column index
+                    }
+                    row++;
+                } while (result.moveToNext());
+            }
+
+            resultData.put("data", data);
+            resultData.put("totalPrice", totalPrice);
+            resultData.put("totalUnits", totalUnits);
+        }
+
+        return resultData;
+    }
 
     public void updateStock(String itemName, int itemQuantity, boolean deleteAll) {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
@@ -128,17 +166,20 @@ public class SQLiteManager extends SQLiteOpenHelper {
         if (deleteAll) {
             deleteItems(sqLiteDatabase, itemName);
         } else {
-            // Retrieve the current item quantity from the database
+            // Retrieve the current item quantity and price from the database
             int currentQuantity = getCurrentQuantity(sqLiteDatabase, itemName);
+            double itemPrice = getItemPrice(sqLiteDatabase, itemName);
 
-            // Calculate the updated item quantity
+            // Calculate the updated item quantity and total price
             int updatedQuantity = currentQuantity - itemQuantity;
             if (updatedQuantity < 0) {
                 updatedQuantity = 0; // Ensure the quantity doesn't go below zero
             }
+            double totalPrice = updatedQuantity * itemPrice;
 
             ContentValues contentValues = new ContentValues();
             contentValues.put(ITEM_QUANTITY, updatedQuantity);
+            contentValues.put(TOTAL_PRICE, totalPrice);
 
             String whereClause = ITEM_NAME + " = ?";
             String[] whereArgs = { itemName };
@@ -146,6 +187,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
             sqLiteDatabase.update(TABLE_NAME, contentValues, whereClause, whereArgs);
         }
     }
+
 
     private void deleteItems(SQLiteDatabase sqLiteDatabase, String itemName) {
         String whereClause = ITEM_NAME + " = ?";
@@ -172,5 +214,52 @@ public class SQLiteManager extends SQLiteOpenHelper {
         return currentQuantity;
     }
 
+    private double getItemPrice(SQLiteDatabase sqLiteDatabase, String itemName) {
+        String[] columns = { ITEM_PRICE };
+        String selection = ITEM_NAME + " = ?";
+        String[] selectionArgs = { itemName };
+        String limit = "1";
+
+        Cursor cursor = sqLiteDatabase.query(TABLE_NAME, columns, selection, selectionArgs, null, null, null, limit);
+
+        double itemPrice = 0;
+        if (cursor.moveToFirst()) {
+            int columnIndex = cursor.getColumnIndex(ITEM_PRICE);
+            itemPrice = cursor.getDouble(columnIndex);
+        }
+
+        cursor.close();
+        return itemPrice;
+    }
+
+
+
+
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

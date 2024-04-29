@@ -27,12 +27,13 @@ public class DeleteItem extends AppCompatActivity {
     String selectedItem;
     private ProgressDialog progressDialog;
     EditText numbersToBeDeleted;
+    CheckBox deleteAllOrNot;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_delete_item);
         Spinner spinner = findViewById(R.id.itemToDelete);
-        CheckBox deleteAllOrNot = findViewById(R.id.deleteAll);
+        deleteAllOrNot = findViewById(R.id.deleteAll);
         numbersToBeDeleted= findViewById(R.id.howManyItemsToDelete);
         Button deleteItemFromDB = findViewById(R.id.deleteItemFromDB);
 
@@ -138,6 +139,8 @@ public class DeleteItem extends AppCompatActivity {
 
     private boolean validateFields() {
         String productCount = numbersToBeDeleted.getText().toString().trim();
+        if(!deleteAllOrNot.isChecked()){
+
 
         if (productCount.isEmpty()) {
             // Check if the field is empty
@@ -151,6 +154,7 @@ public class DeleteItem extends AppCompatActivity {
             return false;
         }
 
+        }
         // All fields are valid
         return true;
     }

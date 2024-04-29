@@ -5,7 +5,6 @@ import androidx.cardview.widget.CardView;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
     private CardView addItems, deleteItems, scanItems, viewInventory;
@@ -33,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(i);
         });
         viewInventory.setOnClickListener(view -> {
-            Intent i = new Intent(MainActivity.this,ViewInventory.class);
+            Intent i = new Intent(MainActivity.this, EditItem.class);
             startActivity(i);
         });
     }

@@ -32,7 +32,7 @@ public class ViewItems extends AppCompatActivity {
 
 
 
-        String[] headers = {"DESCRIPTION","U/Price","QTY","$TOTAL"};
+        String[] headers = {"DESCRIPTION","QTY","U/Price","$TOTAL"};
         TableView tableView = findViewById(R.id.stockTable);
         TextView totalnoitem = findViewById(R.id.totalnoitem);
         TextView totalsum = findViewById(R.id.totalsum);

@@ -3,7 +3,6 @@ package com.myapplication;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import java.util.HashMap;
 
@@ -12,7 +11,7 @@ import de.codecrafters.tableview.model.TableColumnWeightModel;
 import de.codecrafters.tableview.toolkit.SimpleTableDataAdapter;
 import de.codecrafters.tableview.toolkit.SimpleTableHeaderAdapter;
 
-public class ViewInventory extends AppCompatActivity {
+public class EditItem extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
