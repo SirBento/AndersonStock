@@ -2,7 +2,10 @@ package com.myapplication;
 
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -12,6 +15,8 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.util.HashMap;
 import de.codecrafters.tableview.TableView;
 import de.codecrafters.tableview.model.TableColumnWeightModel;
@@ -20,13 +25,15 @@ import de.codecrafters.tableview.toolkit.SimpleTableHeaderAdapter;
 
 public class DeleteItem extends AppCompatActivity {
     String selectedItem;
+    private ProgressDialog progressDialog;
+    EditText numbersToBeDeleted;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_delete_item);
         Spinner spinner = findViewById(R.id.itemToDelete);
         CheckBox deleteAllOrNot = findViewById(R.id.deleteAll);
-        EditText numbersToBeDeleted = findViewById(R.id.howManyItemsToDelete);
+        numbersToBeDeleted= findViewById(R.id.howManyItemsToDelete);
         Button deleteItemFromDB = findViewById(R.id.deleteItemFromDB);
 
         SQLiteManager sqLiteManager = SQLiteManager.instanceOfDatabase(this);
@@ -44,7 +51,6 @@ public class DeleteItem extends AppCompatActivity {
             // Assuming the second field is at index 1
             items[i] = data[i][0];
         }
-
        // Create an ArrayAdapter using the data source and a default layout
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, items);
        // Set the adapter on the Spinner
@@ -63,42 +69,121 @@ public class DeleteItem extends AppCompatActivity {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 // Handle the case when no item is selected
-                selectedItem = "";
+                showToast("Select Device First");
             }
         });
 
-        deleteAllOrNot.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+        deleteAllOrNot.setOnCheckedChangeListener((compoundButton, isChecked) -> {
 
-                if(isChecked){
+            if(isChecked){
 
-                    numbersToBeDeleted.setEnabled(false);
-                    numbersToBeDeleted.setAlpha(0.1f);
+                numbersToBeDeleted.setEnabled(false);
+                numbersToBeDeleted.setAlpha(0.1f);
 
-                }else{
+            }else{
 
-                    numbersToBeDeleted.setEnabled(true);
-                    numbersToBeDeleted.setAlpha(1.0f);
-                }
+                numbersToBeDeleted.setEnabled(true);
+                numbersToBeDeleted.setAlpha(1.0f);
+            }
 
+        });
+
+        numbersToBeDeleted.setOnFocusChangeListener((view, hasFocus) -> {
+            if(hasFocus){
+                numbersToBeDeleted.setHint("");
             }
         });
 
 
-        deleteItemFromDB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String quantity = numbersToBeDeleted.getText().toString();
+        deleteItemFromDB.setOnClickListener(view -> {
 
-                if(deleteAllOrNot.isChecked()){
-                    sqLiteManager.updateStock(selectedItem,0,true);
-                }else {
-                    sqLiteManager.updateStock(selectedItem,Integer.parseInt(quantity),false);
-                }
+            if(validateFields() && spinner.getSelectedItem()!=null  ){
+
+            String quantity = numbersToBeDeleted.getText().toString();
+            showLoadingIndicator();
+
+
+            if(deleteAllOrNot.isChecked()){
+                sqLiteManager.updateStock(selectedItem,0,true);
+                // Simulating a delay of 2 seconds for demonstration purposes.
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        numbersToBeDeleted.setText("");
+                        deleteAllOrNot.setChecked(false);
+                        hideLoadingIndicator();
+                        showToast("Deleted Successfully");
+                    }
+                }, 2000);
+
+            }else {
+
+                sqLiteManager.updateStock(selectedItem,Integer.parseInt(quantity),false);
+                // Simulating a delay of 2 seconds for demonstration purposes.
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        numbersToBeDeleted.setText("");
+                        deleteAllOrNot.setChecked(false);
+                        hideLoadingIndicator();
+                        showToast("Deleted Successfully");
+                    }
+                }, 2000);
             }
+        }
         });
 
+    }
+
+
+    private boolean validateFields() {
+        String productCount = numbersToBeDeleted.getText().toString().trim();
+
+        if (productCount.isEmpty()) {
+            // Check if the field is empty
+            showError(numbersToBeDeleted, "Field cannot be empty");
+            return false;
+        }
+
+        if (!isInteger(productCount)) {
+            // Check if quantity is an integer
+            showError(numbersToBeDeleted, "Invalid input");
+            return false;
+        }
+
+        // All fields are valid
+        return true;
+    }
+
+
+    private boolean isInteger(String text) {
+        try {
+            Integer.parseInt(text);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private void showError(EditText editText, String errorMessage) {
+        editText.setError(errorMessage);
+    }
+
+    private void showLoadingIndicator() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
+
+    private void hideLoadingIndicator() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
 
