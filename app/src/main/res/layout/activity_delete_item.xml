@@ -5,8 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/backgroundgradient"
+    android:background="@drawable/grad"
     tools:context=".DeleteItem">
+
 <TextView
     android:id="@+id/textView"
     android:layout_width="217dp"
@@ -23,45 +24,103 @@
     tools:layout_editor_absoluteY="16dp" />
 
 
-<TextView
-    android:id="@+id/barcodedelete"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignBottom="@+id/textView"
-    android:layout_marginLeft="175dp"
-    android:layout_marginBottom="-171dp"
-    android:ems="10"
-    android:hint="Code Number"
-    android:inputType="textPersonName"
-    android:textColor="#ffff"
-    android:textColorHint="#ffff"
-    tools:layout_editor_absoluteX="114dp"
-    tools:layout_editor_absoluteY="211dp" />
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginTop="215dp"
+        android:text="Product "
+        android:textColor="#C1F8B0B0"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="38dp"
+        tools:layout_editor_absoluteY="224dp" />
 
-<TextView
-    android:id="@+id/textView3"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="325dp"
-    android:text="Item to Delete:"
-    android:textColor="#C1F8B0B0"
-    android:textSize="20dp"
-    android:textStyle="bold" />
+    <Spinner
+        android:id="@+id/itemToDelete"
+        android:layout_width="196dp"
+        android:layout_height="58dp"
+        android:layout_alignBottom="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="-84dp"
+        tools:layout_editor_absoluteX="114dp"
+        tools:layout_editor_absoluteY="211dp" />
+
+    <EditText
+        android:id="@+id/howManyItemsToDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/itemToDelete"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="-66dp"
+        android:ems="10"
+        android:hint="10"
+        android:inputType="number"
+        android:textColor="#FF673AB7"
+        android:textColorHint="#FF673AB7"
+        tools:layout_editor_absoluteX="114dp"
+        tools:layout_editor_absoluteY="211dp" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/textView3"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginBottom="-76dp"
+        android:text="Total"
+        android:textColor="#C1F8B0B0"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="38dp"
+        tools:layout_editor_absoluteY="287dp" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/textView4"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="9dp"
+        android:layout_marginBottom="-60dp"
+        android:text="Delete All"
+        android:textColor="#C1F8B0B0"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="38dp"
+        tools:layout_editor_absoluteY="287dp" />
 
 
+    <CheckBox
+        android:id="@+id/deleteAll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/howManyItemsToDelete"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:text="Yes"
+        android:textColor="#FF673AB7"
+        android:layout_marginEnd="248dp"
+        android:layout_marginBottom="-65dp"
+        tools:layout_editor_absoluteX="114dp"
+        tools:layout_editor_absoluteY="211dp" />
 
-<Button
-    android:id="@+id/deleteItemToTheDatabasebtn"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignBottom="@+id/barcodedelete"
-    android:layout_centerHorizontal="true"
-
-    android:layout_marginBottom="-70dp"
-    android:ems="10"
-    android:inputType="textPersonName"
-    android:text="Delete Item"
-    tools:layout_editor_absoluteX="114dp"
-    tools:layout_editor_absoluteY="211dp" />
+    <Button
+        android:id="@+id/deleteItemFromDB"
+        android:layout_width="180dp"
+        android:layout_height="66dp"
+        android:layout_alignBottom="@+id/deleteAll"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="-88dp"
+        android:ems="10"
+        android:text="Delete"
+        android:textSize="23dp"
+        tools:layout_editor_absoluteX="114dp"
+        tools:layout_editor_absoluteY="211dp" />
 
 </RelativeLayout>

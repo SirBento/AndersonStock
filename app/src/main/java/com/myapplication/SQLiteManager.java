@@ -5,27 +5,24 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
-
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-
+import java.util.HashMap;
 
 public class SQLiteManager extends SQLiteOpenHelper {
 
     private  static  SQLiteManager sqLiteManager;
-    private static  final  String DATABASE_NAME = "StockDB";
+    private static  final  String DATABASE_NAME = "PhoneStockDB";
     private static  final  int DATABASE_VERSION = 1;
-    private static  final  String TABLE_NAME = "Stock";
+    private static  final  String TABLE_NAME = "PhoneStock";
     private static  final  String COUNTER = "Counter";
 
-
-    private static  final  String ID_FIELD = "id";
-    private static  final  String TITLE_FIELD = "title";
-    private static  final  String DESC_FIELD = "desc";
-    private static  final  String DELETED_FIELD = "deleted";
+    // Table columns
+    private static  final  String  ITEM_ID  = "itemID";
+    private static  final  String ITEM_NAME= "itemName";
+    private static  final  String ITEM_QUANTITY= "itemQuantity";
+    private static  final  String ITEM_PRICE= "itemPrice";
+    private static  final  String TOTAL_PRICE= "totalPrice";
 
     private static  final DateFormat dateformat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
 
@@ -46,151 +43,134 @@ public class SQLiteManager extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
-        StringBuilder sql;
-        sql = new StringBuilder()
-                .append(" CREATE TABLE ")
+        StringBuilder sql = new StringBuilder()
+                .append("CREATE TABLE ")
                 .append(TABLE_NAME)
-                .append("(")
+                .append(" (")
                 .append(COUNTER)
                 .append(" INTEGER PRIMARY KEY AUTOINCREMENT, ")
-                .append(ID_FIELD)
-                .append(" INT,")
-                .append(TITLE_FIELD)
+                .append(ITEM_ID)
                 .append(" TEXT, ")
-                .append(DESC_FIELD)
+                .append(ITEM_NAME)
                 .append(" TEXT, ")
-                .append(DELETED_FIELD)
-                .append(" TEXT)");
+                .append(ITEM_QUANTITY)
+                .append(" INTEGER, ")
+                .append(ITEM_PRICE)
+                .append(" REAL, ")
+                .append(TOTAL_PRICE)
+                .append(" REAL)");
+
         sqLiteDatabase.execSQL(sql.toString());
     }
-
-
-
-    /**
-     *    public void onCreate(SQLiteDatabase sqLiteDatabase) {
-     *     StringBuilder sql = new StringBuilder()
-     *             .append("CREATE TABLE ")
-     *             .append(TABLE_NAME)
-     *             .append(" (")
-     *             .append(COUNTER)
-     *             .append(" INTEGER PRIMARY KEY AUTOINCREMENT, ")
-     *             .append(ITEM_ID)      ITEM_ID  =itemID
-     *             .append(" TEXT, ")
-     *             .append(ITEM_NAME)    ITEM_NAME= itemName
-     *             .append(" TEXT, ")
-     *             .append(ITEM_QUANTITY)   ITEM_QUANTITY= itemQuantity
-     *             .append(" INTEGER, ")
-     *             .append(ITEM_PRICE)    ITEM_PRICE= itemPrice
-     *             .append(" REAL, ")
-     *             .append(TOTAL_PRICE)    TOTAL_PRICE= totalPrice
-     *             .append(" REAL)");
-     *
-     *     sqLiteDatabase.execSQL(sql.toString());
-     * }
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     * // Assuming you have an instance of SQLiteDatabase named 'database'
-     *
-     * ContentValues values = new ContentValues();
-     * values.put(ITEM_ID, itemID);
-     * values.put(ITEM_NAME, itemName);
-     * values.put(ITEM_QUANTITY, itemQuantity);
-     * values.put(ITEM_PRICE, itemPrice);
-     * values.put(TOTAL_PRICE, totalPrice);
-     *
-     * long newRowId = database.insert(TABLE_NAME, null, values);
-     *
-     * if (newRowId != -1) {
-     *     // Data inserted successfully
-     * } else {
-     *     // Failed to insert data
-     * }
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     * */
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
     }
 
-
-    public  void addStockToDatabase(Stock stock ){
+    public  void addStockToDatabase(Phones phones, Context context ){
 
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(ID_FIELD, stock.getId());
-        contentValues.put(TITLE_FIELD, stock.getTitle());
-        contentValues.put(DESC_FIELD, stock.getDescription());
-        contentValues.put(DELETED_FIELD, getStringFromDate(stock.getDeleted()));
+        contentValues.put(ITEM_ID, phones.getItemID());
+        contentValues.put(ITEM_NAME, phones.getItemName());
+        contentValues.put(ITEM_QUANTITY, phones.getItemQuantity());
+        contentValues.put(ITEM_PRICE, phones.getItemPrice());
+        contentValues.put(TOTAL_PRICE, phones.getTotalPrice());
+
         sqLiteDatabase.insert(TABLE_NAME,null,contentValues);
+
     }
 
-    public  void populateDisplayTable(){
 
+
+    public HashMap<String, Object> populateDisplayTable() {
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
-        try(Cursor result = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_NAME, null)){
+        HashMap<String, Object> resultData = new HashMap<>();
 
-            if (result.getCount()!=0){
+        try (Cursor result = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_NAME, null)) {
+            int rowCount = result.getCount();
+            int columnCount = result.getColumnCount();
 
-                while(result.moveToNext()){
-                    int id = result.getInt(1);
-                    String title = result.getString(2);
-                    String desc = result.getString(3);
-                    String stringDeleted = result.getString(4);
-                    Date deleted = getDateFromString(stringDeleted);
+            String[][] data = new String[rowCount][columnCount - 1]; // Adjust column count
+            double totalPrice = 0.0;
+            int totalUnits = 0;
 
-                    Stock stock = new Stock(id,title,desc,deleted);
-                    Stock stock2 = stock;
-                }
+            if (result.moveToFirst()) {
+                int row = 0;
+                do {
+                    for (int column = 2; column < columnCount; column++) { // Start from index 1
+                        if (column == columnCount - 1) {
+                            double price = Double.parseDouble(result.getString(column));
+                            totalPrice += price;
+                        } else if (column == columnCount - 2) {
+                            int units = Integer.parseInt(result.getString(column));
+                            totalUnits += units;
+                        }
+                        data[row][column - 2] = result.getString(column); // Adjust column index
+                    }
+                    row++;
+                } while (result.moveToNext());
             }
 
-
+            resultData.put("data", data);
+            resultData.put("totalPrice", totalPrice);
+            resultData.put("totalUnits", totalUnits);
         }
+
+        return resultData;
     }
 
 
-    public void updateStock( Stock stock){
-
+    public void updateStock(String itemName, int itemQuantity, boolean deleteAll) {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(ID_FIELD, stock.getId());
-        contentValues.put(TITLE_FIELD, stock.getTitle());
-        contentValues.put(DESC_FIELD, stock.getDescription());
-        contentValues.put(DELETED_FIELD, getStringFromDate(stock.getDeleted()));
-        sqLiteDatabase.update(TABLE_NAME,null,ID_FIELD +" =? ", new String[]{String.valueOf(stock.getId())});
-    }
 
+        if (deleteAll) {
+            deleteItems(sqLiteDatabase, itemName);
+        } else {
+            // Retrieve the current item quantity from the database
+            int currentQuantity = getCurrentQuantity(sqLiteDatabase, itemName);
 
-    private String getStringFromDate(Date date) {
+            // Calculate the updated item quantity
+            int updatedQuantity = currentQuantity - itemQuantity;
+            if (updatedQuantity < 0) {
+                updatedQuantity = 0; // Ensure the quantity doesn't go below zero
+            }
 
-        if(date == null){
-            return  null;
-        }else{
-            return dateformat.format(date);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(ITEM_QUANTITY, updatedQuantity);
+
+            String whereClause = ITEM_NAME + " = ?";
+            String[] whereArgs = { itemName };
+
+            sqLiteDatabase.update(TABLE_NAME, contentValues, whereClause, whereArgs);
         }
     }
 
-    private Date getDateFromString(String string){
+    private void deleteItems(SQLiteDatabase sqLiteDatabase, String itemName) {
+        String whereClause = ITEM_NAME + " = ?";
+        String[] whereArgs = { itemName };
 
-        try {
-            return dateformat.parse(string);
-
-        }catch (ParseException | NullPointerException e){
-
-            return null;
-        }
+        sqLiteDatabase.delete(TABLE_NAME, whereClause, whereArgs);
     }
+
+    private int getCurrentQuantity(SQLiteDatabase sqLiteDatabase, String itemName) {
+        String[] columns = { ITEM_QUANTITY };
+        String selection = ITEM_NAME + " = ?";
+        String[] selectionArgs = { itemName };
+        String limit = "1";
+
+        Cursor cursor = sqLiteDatabase.query(TABLE_NAME, columns, selection, selectionArgs, null, null, null, limit);
+
+        int currentQuantity = 0;
+        if (cursor.moveToFirst()) {
+            int columnIndex = cursor.getColumnIndex(ITEM_QUANTITY);
+            currentQuantity = cursor.getInt(columnIndex);
+        }
+
+        cursor.close();
+        return currentQuantity;
+    }
+
+
 }
