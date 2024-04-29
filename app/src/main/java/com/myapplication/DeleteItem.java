@@ -28,11 +28,12 @@ public class DeleteItem extends AppCompatActivity {
     private ProgressDialog progressDialog;
     EditText numbersToBeDeleted;
     CheckBox deleteAllOrNot;
+    Spinner spinner;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_delete_item);
-        Spinner spinner = findViewById(R.id.itemToDelete);
+        spinner = findViewById(R.id.itemToDelete);
         deleteAllOrNot = findViewById(R.id.deleteAll);
         numbersToBeDeleted= findViewById(R.id.howManyItemsToDelete);
         Button deleteItemFromDB = findViewById(R.id.deleteItemFromDB);

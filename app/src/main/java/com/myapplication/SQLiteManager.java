@@ -84,45 +84,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
 
 
-   /* public HashMap<String, Object> populateDisplayTable() {
-        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
-        HashMap<String, Object> resultData = new HashMap<>();
-
-        try (Cursor result = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_NAME, null)) {
-            int rowCount = result.getCount();
-            int columnCount = result.getColumnCount();
-
-            String[][] data = new String[rowCount][columnCount - 1]; // Adjust column count
-            double totalPrice = 0.0;
-            int totalUnits = 0;
-
-            if (result.moveToFirst()) {
-                int row = 0;
-                do {
-                    for (int column = 2; column < columnCount; column++) { // Start from index 1
-                        if (column == columnCount - 1) {
-                            double price = Double.parseDouble(result.getString(column));
-                            totalPrice += price;
-                        } else if (column == columnCount - 2) {
-                            int units = Integer.parseInt(result.getString(column));
-                            totalUnits += units;
-                        }
-                        data[row][column - 2] = result.getString(column); // Adjust column index
-                    }
-                    row++;
-                } while (result.moveToNext());
-            }
-
-            resultData.put("data", data);
-            resultData.put("totalPrice", totalPrice);
-            resultData.put("totalUnits", totalUnits);
-        }
-
-        return resultData;
-    }
-*/
-
-
     public HashMap<String, Object> populateDisplayTable() {
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
         HashMap<String, Object> resultData = new HashMap<>();
@@ -232,7 +193,42 @@ public class SQLiteManager extends SQLiteOpenHelper {
         return itemPrice;
     }
 
+    public HashMap<String, Object> getItemInfo(String itemName) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + ITEM_NAME + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{itemName});
 
+        HashMap<String, Object> result = new HashMap<>();
+        String[][] data;
+
+        int rowCount = cursor.getCount();
+        int columnCount = cursor.getColumnCount();
+        data = new String[rowCount][columnCount];
+
+        if (cursor.moveToFirst()) {
+            int i = 0;
+            do {
+                for (int j = 0; j < columnCount; j++) {
+                    data[i][j] = cursor.getString(j);
+                }
+                i++;
+            } while (cursor.moveToNext());
+        }
+
+        result.put("data", data);
+        return result;
+    }
+
+    public boolean updateItem(String itemName, String newName, int newQuantity, float newPrice) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ITEM_NAME, newName);
+        contentValues.put(ITEM_QUANTITY, newQuantity);
+        contentValues.put(ITEM_PRICE, newPrice);
+        contentValues.put(TOTAL_PRICE, newPrice * newQuantity);
+        int rowsAffected = db.update(TABLE_NAME, contentValues, ITEM_NAME + " = ?", new String[]{itemName});
+        return rowsAffected > 0;
+    }
 
 
 

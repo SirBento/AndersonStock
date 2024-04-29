@@ -110,12 +110,7 @@ public class AddItem extends AppCompatActivity {
             showError(unitPrice, "Field cannot be empty");
             return false;
         }
-/*
-        if (!isTextOnly(productNameText)) {
-            // Check if productName contains only text
-            showError(productName, "Invalid input");
-            return false;
-        }*/
+
 
         if (!isInteger(quantityText)) {
             // Check if quantity is an integer
@@ -136,12 +131,6 @@ public class AddItem extends AppCompatActivity {
     private void showError(EditText editText, String errorMessage) {
         editText.setError(errorMessage);
     }
-/*
-    private boolean isTextOnly(String text) {
-        // Regular expression to match only text (letters and spaces)
-        String pattern = "^[a-zA-Z\\s]+$";
-        return text.matches(pattern);
-    }*/
 
     private boolean isInteger(String text) {
         try {
